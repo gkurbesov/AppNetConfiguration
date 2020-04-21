@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Gennady Kurbesov</Authors>
+    <Description>Settings and configuration repository for .Net applications</Description>
+    <RepositoryUrl>https://github.com/gkurbesov/AppNetConfiguration</RepositoryUrl>
+    <PackageTags />
+  </PropertyGroup>
+
+</Project>
