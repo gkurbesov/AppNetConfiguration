@@ -5,7 +5,10 @@
     <Authors>Gennady Kurbesov</Authors>
     <Description>Settings and configuration repository for .Net applications</Description>
     <RepositoryUrl>https://github.com/gkurbesov/AppNetConfiguration</RepositoryUrl>
-    <PackageTags />
+    <PackageTags>config, configuration, setting,</PackageTags>
+    <Copyright>Copyright (c) 2020 Gennady Kurbesov</Copyright>
+    <PackageLicenseUrl>https://github.com/gkurbesov/AppNetConfiguration/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/gkurbesov/AppNetConfiguration</PackageProjectUrl>
   </PropertyGroup>
 
 </Project>
