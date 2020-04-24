@@ -219,7 +219,7 @@ namespace AppNetConfiguration
             return new SecureString(param);
         }
 
-        public static explicit operator string(SecureString param)
+        public static implicit operator string(SecureString param)
         {
             return param.RawValue;
         }
