@@ -17,8 +17,17 @@ namespace AppNetConfiguration.JsonProvider
                 {
                     using (TextReader reader = new StreamReader(GetFilePath()))
                     {
-                        return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(),
-                            new Newtonsoft.Json.Converters.StringEnumConverter());
+                        var tmp = reader.ReadToEnd();
+                        if (!string.IsNullOrWhiteSpace(tmp))
+                        {
+                            return JsonConvert.DeserializeObject<T>(tmp,
+                           new Newtonsoft.Json.Converters.StringEnumConverter());
+                        }
+                        else
+                        {
+                            Log("T Read<T> ERROR", "File is empty");
+                            return null;
+                        }                       
                     }
                 }
                 catch (Exception ex)
@@ -41,11 +50,20 @@ namespace AppNetConfiguration.JsonProvider
                 try
                 {
                     using (TextReader reader = new StreamReader(GetFilePath()))
-                    {
-                        TAppConfig new_config = JsonConvert.DeserializeObject<TAppConfig>(reader.ReadToEnd(),
-                            new Newtonsoft.Json.Converters.StringEnumConverter());
-                        Utils.CopyObjectData(new_config, config);
-                        return true;
+                    {                        
+                        var tmp = reader.ReadToEnd();
+                        if (!string.IsNullOrWhiteSpace(tmp))
+                        {
+                            TAppConfig new_config = JsonConvert.DeserializeObject<TAppConfig>(tmp,
+                             new Newtonsoft.Json.Converters.StringEnumConverter());
+                            Utils.CopyObjectData(new_config, config);
+                            return true;
+                        }
+                        else
+                        {
+                            Log("bool Read(obj) ERROR", "File is empty");
+                            return false;
+                        }
                     }
                 }
                 catch (Exception ex)
