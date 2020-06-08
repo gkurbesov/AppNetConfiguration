@@ -11,6 +11,7 @@ namespace AppNetConfiguration.Providers
     /// <typeparam name="TAppConfig"></typeparam>
     public abstract class BaseConfigProvider<TAppConfig> : IConfigProvider where TAppConfig : AppNetConfig, new()
     {
+        protected FileLogger _logger;
         /// <summary>
         /// path to configuration store file
         /// </summary>
@@ -90,5 +91,30 @@ namespace AppNetConfiguration.Providers
         /// <param name="config">Instance of a class with settings to be saved</param>
         /// <returns></returns>
         public abstract string WriteAsString(AppNetConfig config);
+
+        public void Log(string message) => _logger?.Write(message);
+
+        public void Log(string tag, string message) => _logger?.Write(tag, message);
+
+        public IConfigProvider SetLoggerEnable(bool value, string path = null, string file_prefix = null)
+        {
+            if(value)
+            {
+                if(_logger == null)
+                {
+                    _logger = new FileLogger(!string.IsNullOrWhiteSpace(path) ? path : _path, 
+                        !string.IsNullOrWhiteSpace(file_prefix) ? file_prefix : "appconfig");
+                }
+            }
+            else
+            {
+                if(_logger != null)
+                {
+                    _logger.Dispose();
+                    _logger = null;
+                }
+            }
+            return this;
+        }
     }
 }

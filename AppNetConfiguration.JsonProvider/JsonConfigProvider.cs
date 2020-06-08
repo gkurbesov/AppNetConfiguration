@@ -21,13 +21,16 @@ namespace AppNetConfiguration.JsonProvider
                             new Newtonsoft.Json.Converters.StringEnumConverter());
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Log("T Read<T> ERROR", ex.Message);
+                    Log("T Read<T> TRACE", ex.StackTrace);
                     return null;
                 }
             }
             else
             {
+                Log("T Read<T>", "File not exist: " + GetFilePath());
                 return null;
             }
         }
@@ -45,13 +48,16 @@ namespace AppNetConfiguration.JsonProvider
                         return true;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Log("bool Read(obj) ERROR", ex.Message);
+                    Log("bool Read(obj) TRACE", ex.StackTrace);
                     return Write(config);
                 }
             }
             else
             {
+                Log("bool Read(obj)", "File not exist: " + GetFilePath());
                 return Write(config);
             }
         }
@@ -72,8 +78,10 @@ namespace AppNetConfiguration.JsonProvider
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Log("bool Read(string, obj) ERROR", ex.Message);
+                Log("bool Read(string, obj) TRACE", ex.StackTrace);
                 return false;
             }
         }
@@ -88,8 +96,10 @@ namespace AppNetConfiguration.JsonProvider
                 }
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Log("bool Write(obj) ERROR", ex.Message);
+                Log("bool Write(obj) TRACE", ex.StackTrace);
                 return false;
             }
         }

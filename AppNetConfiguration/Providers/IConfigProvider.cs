@@ -22,6 +22,12 @@ namespace AppNetConfiguration.Providers
         /// <returns></returns>
         IConfigProvider SetFileName(string file);
         /// <summary>
+        /// Enable or disable the configuration log
+        /// </summary>
+        /// <param name="value">true - enable write log</param>
+        /// <returns></returns>
+        IConfigProvider SetLoggerEnable(bool value, string path = null, string file_prefix = null);
+        /// <summary>
         /// Read configuration
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -59,5 +65,16 @@ namespace AppNetConfiguration.Providers
         /// <param name="config">Instance of a class with settings to be saved</param>
         /// <returns></returns>
         string WriteAsString(AppNetConfig config);
+        /// <summary>
+        /// Write a message to the log file
+        /// </summary>
+        /// <param name="message">log message</param>
+        void Log(string message);
+        /// <summary>
+        /// Write a message to the log file
+        /// </summary>
+        /// <param name="tag">log tag</param>
+        /// <param name="message">log message</param>
+        void Log(string tag, string message);
     }
 }

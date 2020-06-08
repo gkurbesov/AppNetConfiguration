@@ -1,6 +1,7 @@
 ﻿using AppNetConfiguration.Providers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace AppNetConfiguration
@@ -11,8 +12,14 @@ namespace AppNetConfiguration
     public abstract class AppNetConfig : SaveScheduler
     {
         private IConfigProvider _provider;
+        public AppNetConfig() { }
         public AppNetConfig(IConfigProvider provider) => _provider = provider;
-
+        /// <summary>
+        /// Enable or disable the configuration log
+        /// </summary>
+        /// <param name="value">true - enable write log</param>
+        /// <returns></returns>
+        protected void SetLoggerEnable(bool value, string path = null, string file_prefix = null) => _provider?.SetLoggerEnable(value, path, file_prefix);
         /// <summary>
         /// Save config with default delay
         /// </summary>
