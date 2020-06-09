@@ -9,23 +9,30 @@ namespace AppNetConfiguration.Sample
 {
     public class MyXmlConfig : AppNetConfig
     {
-        private bool is_init = false;
+        private static object locker = new object();
         private static MyXmlConfig instance = null;
 
         public string Login { get; set; } = string.Empty;
         public SecureString Password { get; set; } = string.Empty;
         public int Age { get; set; } = 0;
 
-        public MyXmlConfig()
-            : base(new XmlConfigProvider<MyXmlConfig>()
-                  .SetPath("D:\\").SetFileName("SampleConfig"))
-        { }
+        public MyXmlConfig() { }
 
         public static MyXmlConfig Instance()
         {
-            if (instance == null) instance = new MyXmlConfig();
-            if (!instance.is_init) instance.Read();
-            return instance;
+            lock (locker)
+            {
+                if (instance == null) instance = new MyXmlConfig();
+                if (!instance._initialized)instance.Initialize();
+                return instance;
+            }
+        }
+
+        protected override IConfigProvider OnCreateDefaultProvider()
+        {
+            return new XmlConfigProvider<MyXmlConfig>()
+                        .SetPath("D:\\")
+                        .SetFileName("SampleConfig");
         }
 
         public override string ToString()
