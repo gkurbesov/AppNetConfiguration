@@ -27,13 +27,13 @@ namespace ExampleConfig
         public string Login { get; set; }
         public SecureString Password { get; set; }
 
-        public AppXmlConfig() : base(new XmlConfigProvider<AppXmlConfig>()
-            .SetPath(Directory.GetCurrentDirectory())
-            .SetFileName("appconfig")) { }
+        protected override IConfigProvider OnCreateDefaultProvider() => new XmlConfigProvider<AppXmlConfig>()
+                .SetPath(Directory.GetCurrentDirectory())
+                .SetFileName("appconfig");
 
-        public override string ToString() => 
-		$"login: {Login}, password: {Password.ToString()}";        
+        public override string ToString() => $"login: {Login}, password: {Password.ToString()}";
     }
+    
     class Program
     {
         static void Main(string[] args)
