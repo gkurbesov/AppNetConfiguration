@@ -10,14 +10,28 @@ namespace AppNetConfiguration
     /// </summary>
     public class Utils
     {
+        public const BindingFlags MemberAccessFlags =
+           BindingFlags.Public | BindingFlags.NonPublic |
+           BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase;
+
+        public const BindingFlags MemberPublicInstanceAccessFlags =
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase;
+
         /// <summary>
         /// Copies values from one instance of a class to another
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        public static void CopyObjectData(object source, object target)
+        public static void CopyObjectData(object source, object target) => CopyObjectData(source, target, MemberAccessFlags);
+        /// <summary>
+        /// Copies values from one instance of a class to another
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="bindin_flags"></param>
+        public static void CopyObjectData(object source, object target, BindingFlags bindin_flags)
         {
-            MemberInfo[] mi_arr = target.GetType().GetMembers();
+            MemberInfo[] mi_arr = target.GetType().GetMembers(bindin_flags);
             foreach (MemberInfo field in mi_arr)
             {
                 if (field.MemberType == MemberTypes.Field)
@@ -32,7 +46,7 @@ namespace AppNetConfiguration
                 else if (field.MemberType == MemberTypes.Property)
                 {
                     PropertyInfo property_target = field as PropertyInfo;
-                    PropertyInfo property_source = source.GetType().GetProperty(field.Name);
+                    PropertyInfo property_source = source.GetType().GetProperty(field.Name, bindin_flags);
                     if (property_source == null)
                         continue;
 
