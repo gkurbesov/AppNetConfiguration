@@ -105,26 +105,42 @@ namespace AppNetConfiguration.JsonProvider
         }
         public override bool Write(AppNetConfig config)
         {
-            try
+            if(config != null)
             {
-                using (TextWriter writer = new StreamWriter(GetFilePath()))
+                try
                 {
-                    writer.Write(JsonConvert.SerializeObject(config, Formatting.Indented,
-                        new Newtonsoft.Json.Converters.StringEnumConverter()));
+                    using (TextWriter writer = new StreamWriter(GetFilePath()))
+                    {
+                        writer.Write(JsonConvert.SerializeObject(config, Formatting.Indented,
+                            new Newtonsoft.Json.Converters.StringEnumConverter()));
+                    }
+                    return true;
                 }
-                return true;
+                catch (Exception ex)
+                {
+                    Log("bool Write(obj) ERROR", ex.Message);
+                    Log("bool Write(obj) TRACE", ex.StackTrace);
+                    return false;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Log("bool Write(obj) ERROR", ex.Message);
-                Log("bool Write(obj) TRACE", ex.StackTrace);
+                Log("bool Write(obj) ERROR", "config obj is null");
                 return false;
             }
         }
         public override string WriteAsString(AppNetConfig config)
         {
-            return JsonConvert.SerializeObject(config, Formatting.Indented,
+            if (config != null)
+            {
+                return JsonConvert.SerializeObject(config, Formatting.Indented,
                         new Newtonsoft.Json.Converters.StringEnumConverter());
+            }
+            else
+            {
+                Log("string WriteAsString(obj) ERROR", "config obj is null");
+                return null;
+            }
         }
     }
 }
