@@ -210,7 +210,7 @@ namespace AppNetConfiguration
         /// </summary>
         /// <returns></returns>
         public override string ToString()
-        {           
+        {
             return RawValue;
         }
 

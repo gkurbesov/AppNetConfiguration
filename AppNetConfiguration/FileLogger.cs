@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +36,22 @@ namespace AppNetConfiguration
         }
 
         #region file
+        public void RebuildStream()
+        {
+            lock (locker2)
+            {
+                DataProcessingFlush();
+                buffer?.Flush();
+                stream?.Flush();
+                buffer?.Close();
+                stream?.Close();
+                buffer?.Dispose();
+                stream?.Dispose();
+                buffer = null;
+                stream = null;
+                BuildStream();
+            }
+        }
         protected void BuildStream()
         {
             CurrentFile = GetFileName();
@@ -140,7 +154,7 @@ namespace AppNetConfiguration
         }
 
         public void Dispose()
-        {            
+        {
             lock (locker2)
             {
                 DataProcessingFlush();

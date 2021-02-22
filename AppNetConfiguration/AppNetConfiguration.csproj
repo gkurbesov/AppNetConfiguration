@@ -9,6 +9,11 @@
     <Copyright>Copyright (c) 2020 Gennady Kurbesov</Copyright>
     <PackageLicenseUrl>https://github.com/gkurbesov/AppNetConfiguration/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gkurbesov/AppNetConfiguration</PackageProjectUrl>
+	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
 
 </Project>

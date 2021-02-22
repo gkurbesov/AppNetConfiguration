@@ -56,10 +56,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AppNetConfiguration.JsonProvider\AppNetConfiguration.JsonProvider.csproj">
-      <Project>{8ecf1927-a1a6-4250-bad7-4c84542a427f}</Project>
-      <Name>AppNetConfiguration.JsonProvider</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AppNetConfiguration\AppNetConfiguration.csproj">
       <Project>{b5cd1b9d-b098-4414-b357-c880ecb9bdda}</Project>
       <Name>AppNetConfiguration</Name>

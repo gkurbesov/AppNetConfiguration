@@ -23,14 +23,14 @@ namespace AppNetConfiguration.Sample
             lock (locker)
             {
                 if (instance == null) instance = new MyJsonConfig();
-                if (!instance._initialized) instance.Initialize();
+                if (!instance.initialized) instance.Initialize();
                 return instance;
             }
         }
 
         protected override IConfigProvider OnCreateDefaultProvider()
         {
-            return new JsonProvider.JsonConfigProvider<MyJsonConfig>()
+            return new JsonConfigProvider<MyJsonConfig>()
                         .SetPath("D:\\")
                         .SetFileName("SampleConfig_2");
         }

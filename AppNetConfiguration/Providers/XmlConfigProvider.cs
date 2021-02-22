@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
@@ -22,16 +21,13 @@ namespace AppNetConfiguration.Providers
                         return result;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Log("T Read<T> ERROR", ex.Message);
-                    Log("T Read<T> TRACE", ex.StackTrace);
                     return null;
                 }
             }
             else
             {
-                Log("T Read<T>", "File not exist: " + GetFilePath());
                 return null;
             }
         }
@@ -51,21 +47,17 @@ namespace AppNetConfiguration.Providers
                         }
                         else
                         {
-                            Log("bool Read(obj)", "Failed to deserialize");
                             return false;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log("bool Read(obj) ERROR", ex.Message);
-                    Log("bool Read(obj) TRACE", ex.StackTrace);
                     return Write(config);
                 }
             }
             else
             {
-                Log("bool Read(obj)", "File not exist: " + GetFilePath());
                 return Write(config);
             }
         }
@@ -75,7 +67,6 @@ namespace AppNetConfiguration.Providers
             using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(raw)))
             {
                 var result = ser.Deserialize(ms) as T;
-                if(result == null) Log("T Read<T>(string)", "Failed to deserialize");
                 return result;
             }
         }
@@ -93,15 +84,12 @@ namespace AppNetConfiguration.Providers
                     }
                     else
                     {
-                        Log("bool Read(string, obj)", "Failed to deserialize");
                         return false;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log("bool Read(string, obj) ERROR", ex.Message);
-                Log("bool Read(string, obj) TRACE", ex.StackTrace);
                 return false;
             }
         }
@@ -118,8 +106,6 @@ namespace AppNetConfiguration.Providers
             }
             catch (Exception ex)
             {
-                Log("bool Write(obj) ERROR", ex.Message);
-                Log("bool Write(obj) TRACE", ex.StackTrace);
                 return false;
             }
         }

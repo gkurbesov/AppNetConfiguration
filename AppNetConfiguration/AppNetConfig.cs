@@ -1,8 +1,6 @@
 ﻿using AppNetConfiguration.Providers;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace AppNetConfiguration
@@ -10,17 +8,22 @@ namespace AppNetConfiguration
     /// <summary>
     /// Base abstract class of settings container
     /// </summary>
-    public abstract class AppNetConfig : SaveScheduler
+    public abstract class AppNetConfig
     {
-        /// <summary>
+        [XmlIgnore]
+        [NonSerialized]
+        private Task _taskSaveScheduler = null;
+        [XmlIgnore]
+        [NonSerialized]
+        private int waitSaveInterval = 100;
         /// Internal flag that checks to see if Initialize was called
         /// </summary>
         [XmlIgnore]
         [NonSerialized]
-        protected bool _initialized = false;
+        protected volatile bool initialized = false;
         [XmlIgnore]
         [NonSerialized]
-        private object init_locker = new object();
+        private object locker = new object();
         /// <summary>
         /// An instance of a IConfigProvider that needs to be passed in via constructor or set explicitly to read and write from the configuration store.
         /// </summary>
@@ -29,12 +32,6 @@ namespace AppNetConfiguration
         private IConfigProvider _provider;
         public AppNetConfig() { }
         public AppNetConfig(IConfigProvider provider) => Initialize(provider);
-        /// <summary>
-        /// Enable or disable the configuration log
-        /// </summary>
-        /// <param name="value">true - enable write log</param>
-        /// <returns></returns>
-        protected void SetLoggerEnable(bool value, string path = null, string file_prefix = null) => _provider?.SetLoggerEnable(value, path, file_prefix);
         /// <summary>
         /// Save config with default delay
         /// </summary>
@@ -51,6 +48,36 @@ namespace AppNetConfiguration
         {
             Initialize();
             ExecuteSave(() => _provider.Write(this), interval);
+        }
+        /// <summary>
+        /// Set wait interval
+        /// </summary>
+        /// <param name="ms"></param>
+        public void SetWaitInterval(int ms) => waitSaveInterval = ms > 0 ? ms : 50;
+        /// <summary>
+        /// save with a delay
+        /// </summary>
+        /// <param name="action"></param>
+        protected void ExecuteSave(Action action) => ExecuteSave(action, waitSaveInterval);
+        /// <summary>
+        /// save with a delay
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="interval"></param>
+        protected void ExecuteSave(Action action, int interval)
+        {
+            lock (locker)
+            {
+                if (_taskSaveScheduler == null)
+                {
+                    _taskSaveScheduler = Task.Factory.StartNew(async stateObject =>
+                    {
+                        await Task.Delay(waitSaveInterval > 0 ? waitSaveInterval : 100);
+                        ((Action)stateObject).Invoke();
+                    }, action).ContinueWith(x => _taskSaveScheduler = null);
+                    _taskSaveScheduler?.ConfigureAwait(false);
+                }
+            }
         }
         /// <summary>
         /// Save config
@@ -103,12 +130,12 @@ namespace AppNetConfiguration
         }
         public void Initialize(IConfigProvider provider = null)
         {
-            lock (init_locker)
+            lock (locker)
             {
                 // Initialization occurs only once
-                if (_initialized) return;
-                OnInitialize();
-                _initialized = true;
+                if (initialized) return;
+                OnInitialize(provider);
+                initialized = true;
             }
         }
         /// <summary>
@@ -123,10 +150,7 @@ namespace AppNetConfiguration
                 if (provider == null)
                     throw new NullReferenceException("You must pass an instance of IConfigProvider to initialize or override the OnCreateDefaultProvider method");
             }
-
             _provider = provider;
-            if (!_provider.Read(this))
-                _provider.Log ("Unable to read settings during initialization");
         }
         /// <summary>
         ///  Override this method to creat IConfigProvider

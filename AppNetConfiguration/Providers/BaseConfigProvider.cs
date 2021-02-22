@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading;
 
 namespace AppNetConfiguration.Providers
 {
@@ -11,11 +10,10 @@ namespace AppNetConfiguration.Providers
     /// <typeparam name="TAppConfig"></typeparam>
     public abstract class BaseConfigProvider<TAppConfig> : IConfigProvider where TAppConfig : AppNetConfig, new()
     {
-        protected FileLogger _logger;
         /// <summary>
         /// path to configuration store file
         /// </summary>
-        protected string _path = AppDomain.CurrentDomain.BaseDirectory.Trim('\\');
+        protected string _path = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
         /// <summary>
         /// configuration store file name
         /// </summary>
@@ -24,11 +22,13 @@ namespace AppNetConfiguration.Providers
         /// configuration store file extension
         /// </summary>
         protected string _extension = "config";
+        protected SemaphoreSlim semaphore = new SemaphoreSlim(1);
         /// <summary>
         /// Get the full path to the configuration repository file (with file name and extension)
         /// </summary>
         /// <returns></returns>
-        protected string GetFilePath() => $"{_path}\\{_file}.{_extension}";
+        protected string GetFilePath() =>
+            Path.Combine(_path, $"{_file}.{_extension}");
         /// <summary>
         /// Change configuration file name
         /// </summary>
@@ -36,10 +36,18 @@ namespace AppNetConfiguration.Providers
         /// <returns></returns>
         public IConfigProvider SetFileName(string file)
         {
-            if (string.IsNullOrWhiteSpace(file))
-                throw new ArgumentException("Parameter cannot be null or wite space", "file");
-            _file = file;
-            return this;
+            try
+            {
+                semaphore.Wait();
+                if (string.IsNullOrWhiteSpace(file))
+                    throw new ArgumentException("Parameter cannot be null or wite space", "file");
+                _file = file;
+                return this;
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
         /// <summary>
         /// Change the configuration file storage folder
@@ -48,10 +56,18 @@ namespace AppNetConfiguration.Providers
         /// <returns></returns>
         public IConfigProvider SetPath(string path)
         {
-            if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
-                throw new ArgumentException("Parameter cannot be null and the folder must exist", "path");
-            _path = path.Trim('\\');
-            return this;
+            try
+            {
+                semaphore.Wait();
+                if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+                    throw new ArgumentException("Parameter cannot be null and the folder must exist", "path");
+                _path = path.Trim('\\');
+                return this;
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
         /// <summary>
         /// Read configuration
@@ -91,30 +107,5 @@ namespace AppNetConfiguration.Providers
         /// <param name="config">Instance of a class with settings to be saved</param>
         /// <returns></returns>
         public abstract string WriteAsString(AppNetConfig config);
-
-        public void Log(string message) => _logger?.Write(message);
-
-        public void Log(string tag, string message) => _logger?.Write(tag, message);
-
-        public IConfigProvider SetLoggerEnable(bool value, string path = null, string file_prefix = null)
-        {
-            if(value)
-            {
-                if(_logger == null)
-                {
-                    _logger = new FileLogger(!string.IsNullOrWhiteSpace(path) ? path : _path, 
-                        !string.IsNullOrWhiteSpace(file_prefix) ? file_prefix : "appconfig");
-                }
-            }
-            else
-            {
-                if(_logger != null)
-                {
-                    _logger.Dispose();
-                    _logger = null;
-                }
-            }
-            return this;
-        }
     }
 }
