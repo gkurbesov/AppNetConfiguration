@@ -151,6 +151,7 @@ namespace AppNetConfiguration
                     throw new NullReferenceException("You must pass an instance of IConfigProvider to initialize or override the OnCreateDefaultProvider method");
             }
             _provider = provider;
+            _provider?.Read(this);
         }
         /// <summary>
         ///  Override this method to creat IConfigProvider
